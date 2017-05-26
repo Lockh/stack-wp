@@ -1,0 +1,45 @@
+nginx-proxy:
+    restart: always
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+        - "37.187.120.113:80:80"
+        - "37.187.120.113:443:443"
+    volumes:
+        - wordpress_data_encrypt:/etc/nginx/certs:ro
+        - wordpress_data_nginx_vhost:/etc/nginx/vhost.d
+        - wordpress_data_nginx_html:/usr/share/nginx/html
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-encrypt
+    volumes:
+        - wordpress_data_encrypt:/etc/nginx/certs:rw
+        - /var/run/docker.sock:/var/run/docker.sock
+    volumes_from:
+        - nginx-proxy
+varnish: 
+  image: dockerimages/docker-varnish
+  container_name: varnish
+  links:
+   - wordpress:wordpress
+  environment:
+    - VARNISH_PORT=8080
+db:
+  image: mariadb
+  container_name: wordpress-db
+  environment:
+    - MYSQL_ROOT_PASSWORD=dintOkwoirg7
+  volumes:
+    - wordpress_data_mariadb:/var/lib/mysql    
+wordpress:
+  image: wordpress
+  container_name: wordpress
+  links:
+    - db:mysql
+  volumes:
+    - wordpress_data_httpd:/var/www/html
+  environment:
+    - VIRTUAL_HOST=grotte.dubarbu.fr
+    - LETSENCRYPT_HOST=grotte.dubarbu.fr
+    - LETSENCRYPT_EMAIL=me@dubarbu.fr
