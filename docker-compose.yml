@@ -3,8 +3,8 @@ nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
     ports:
-        - "37.187.120.113:80:80"
-        - "37.187.120.113:443:443"
+        - "80:80"
+        - "443:443"
     volumes:
         - wordpress_data_encrypt:/etc/nginx/certs:ro
         - wordpress_data_nginx_vhost:/etc/nginx/vhost.d
@@ -29,7 +29,7 @@ db:
   image: mariadb
   container_name: wordpress-db
   environment:
-    - MYSQL_ROOT_PASSWORD=dintOkwoirg7
+    - MYSQL_ROOT_PASSWORD=sample
   volumes:
     - wordpress_data_mariadb:/var/lib/mysql    
 wordpress:
